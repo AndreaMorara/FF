@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; color: #fff; font-family: 'Cormorant Garamond', serif; }
+
+.gallery { display: flex; flex-direction: column; width: 100%; }
+.gap { height: 2px; }
+
+/* Ultrawide / hero */
+.hero,
+.section-divider.ultrawide {
+  width: 100%; height: 42vw; min-height: 260px; max-height: 560px;
+  overflow: hidden; position: relative; background: #000;
+}
+.hero img,
+.section-divider.ultrawide img { object-fit: cover; width: 100%; height: 100%; display: block; }
+
+/* Standard / 16:9 / section-divider (non-ultrawide) */
+.photo-standard,
+.photo-169,
+.section-divider:not(.ultrawide):not(.portrait-wrap) { width: 100%; position: relative; background: #000; }
+
+.photo-wrap { position: relative; width: 100%; }
+.photo-wrap img,
+.photo-standard img,
+.photo-169 img { width: 100%; height: auto; display: block; }
+
+/* Portrait centered */
+.portrait-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; background: #000;
+}
+.portrait-inner { max-width: 560px; width: 100%; position: relative; }
+.portrait-inner img { width: 100%; height: auto; display: block; }
+
+/* Portrait pair */
+.photo-pair { display: flex; width: 100%; gap: 2px; background: #000; }
+.photo-pair .photo-wrap { flex: 1; min-width: 0; }
+
+/* Buttons */
+.btn-group {
+  position: absolute; bottom: 14px; right: 14px;
+  display: flex; gap: 8px; z-index: 10;
+}
+.btn-group.btn-group-center {
+  left: 50%; transform: translateX(-50%); right: auto; width: max-content;
+}
+.btn {
+  font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem;
+  letter-spacing: 0.1em; color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.22); background: rgba(0,0,0,0.48);
+  padding: 6px 14px; text-decoration: none; cursor: pointer;
+  white-space: nowrap; display: inline-block;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn:hover { color: #fff; border-color: rgba(255,255,255,0.6); }
+
+/* Title overlay (first photo) */
+.hero-overlay {
+  position: absolute; width: 100%; left: 0; z-index: 5;
+  text-align: center; padding: 0 20px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif; color: #fff;
+  white-space: nowrap; display: block; line-height: 1;
+}
+.hero-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1rem, 2.2vw, 2rem); color: rgba(255,255,255,0.45);
+  letter-spacing: 0.35em; margin-top: 10px;
+}
+
+/* Artist label */
+.artist-label {
+  position: absolute; bottom: 50px; left: 0; width: 100%;
+  padding: 0 30px; z-index: 5; pointer-events: none;
+}
+.artist-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 6.5vw, 6rem); line-height: 1;
+  display: inline-block;
+  background: linear-gradient(to bottom, #fff 50%, transparent 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Section label */
+.section-label {
+  position: absolute; bottom: 20px; left: 0; width: 100%;
+  text-align: center; z-index: 5; padding: 0 20px; pointer-events: none;
+}
+.section-title-full {
+  font-family: 'Bebas Neue', sans-serif; color: rgba(255,255,255,0.70);
+  white-space: nowrap; display: block; line-height: 1;
+}
+.section-title-medium {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 6.5vw, 6rem); color: rgba(255,255,255,0.70);
+  display: block; line-height: 1;
+}
+
+/* Header */
+.gallery-header { background: #000; padding: 80px 60px 60px; }
+.header-main {
+  font-family: 'Bebas Neue', sans-serif; color: rgba(255,255,255,0.90);
+  line-height: 1; letter-spacing: 0.05em;
+}
+.header-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1rem, 2vw, 1.8rem); color: rgba(255,255,255,0.55);
+  margin-top: 12px; letter-spacing: 0.2em;
+}
+
+/* Footer */
+.gallery-footer { background: #000; padding: 50px 20px; text-align: center; }
+.gallery-footer p {
+  font-family: 'Bebas Neue', sans-serif; font-size: 0.75rem;
+  letter-spacing: 0.2em; color: rgba(255,255,255,0.35); line-height: 2;
+}
+
+/* Reveal animation */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.gold-line {
+  width:100%; height:4px;
+  background:linear-gradient(90deg,transparent 0%,#b8962e 20%,#e8d48b 50%,#b8962e 80%,transparent 100%);
+}</style>
+</head>
+<body>
+<div class="gallery">
+
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/00-2026-04-19-03-53-imgl5729.jpeg" loading="eager" alt="">
+    <div class="hero-overlay" style="top:25px"><div class="hero-title fit-text" style="opacity:0.45"></div></div>
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/00-2026-04-19-03-53-imgl5729.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2000-2026-04-19-03-53-imgl5729.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2000-2026-04-19-03-53-imgl5729.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/01-2026-04-19-03-53-imgl5728.jpeg" loading="eager" alt="">
+    <div class="artist-label" style="text-align:right;opacity:0.9"><span class="artist-name"></span></div>
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/01-2026-04-19-03-53-imgl5728.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2001-2026-04-19-03-53-imgl5728.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2001-2026-04-19-03-53-imgl5728.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/02-2026-04-19-03-53-imgl5730.jpeg" loading="lazy" alt="">
+    
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/02-2026-04-19-03-53-imgl5730.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2002-2026-04-19-03-53-imgl5730.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2002-2026-04-19-03-53-imgl5730.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/03-2026-04-19-03-54-imgl5737.jpeg" loading="lazy" alt="">
+    
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/03-2026-04-19-03-54-imgl5737.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2003-2026-04-19-03-54-imgl5737.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2003-2026-04-19-03-54-imgl5737.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="photo-pair reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/04-2026-04-19-03-55-imgl5741-portrait.jpeg" loading="lazy" alt="">
+    <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/04-2026-04-19-03-55-imgl5741-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2004-2026-04-19-03-55-imgl5741-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2004-2026-04-19-03-55-imgl5741-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/05-2026-04-19-04-01-imgl5748-portrait.jpeg" loading="lazy" alt="">
+    <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/05-2026-04-19-04-01-imgl5748-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2005-2026-04-19-04-01-imgl5748-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2005-2026-04-19-04-01-imgl5748-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/06-2026-04-19-04-01-imgl5749.jpeg" loading="lazy" alt="">
+    
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/06-2026-04-19-04-01-imgl5749.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2006-2026-04-19-04-01-imgl5749.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2006-2026-04-19-04-01-imgl5749.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/07-2026-04-19-04-01-imgl5750-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/07-2026-04-19-04-01-imgl5750-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2007-2026-04-19-04-01-imgl5750-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2007-2026-04-19-04-01-imgl5750-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/08-2026-04-19-04-01-imgl5753-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/08-2026-04-19-04-01-imgl5753-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2008-2026-04-19-04-01-imgl5753-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2008-2026-04-19-04-01-imgl5753-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/09-2026-04-19-04-01-imgl5754-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/09-2026-04-19-04-01-imgl5754-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2009-2026-04-19-04-01-imgl5754-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2009-2026-04-19-04-01-imgl5754-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/10-2026-04-19-04-01-imgl5756-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/10-2026-04-19-04-01-imgl5756-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2010-2026-04-19-04-01-imgl5756-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2010-2026-04-19-04-01-imgl5756-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/11-2026-04-19-04-02-imgl5758-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/11-2026-04-19-04-02-imgl5758-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2011-2026-04-19-04-02-imgl5758-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2011-2026-04-19-04-02-imgl5758-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/12-2026-04-19-04-02-imgl5760-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/12-2026-04-19-04-02-imgl5760-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2012-2026-04-19-04-02-imgl5760-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2012-2026-04-19-04-02-imgl5760-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/13-2026-04-19-04-03-imgl5764-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/13-2026-04-19-04-03-imgl5764-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2013-2026-04-19-04-03-imgl5764-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2013-2026-04-19-04-03-imgl5764-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/14-2026-04-19-04-03-imgl5766-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/14-2026-04-19-04-03-imgl5766-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2014-2026-04-19-04-03-imgl5766-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2014-2026-04-19-04-03-imgl5766-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/15-2026-04-19-04-03-imgl5767-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/15-2026-04-19-04-03-imgl5767-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2015-2026-04-19-04-03-imgl5767-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2015-2026-04-19-04-03-imgl5767-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/16-2026-04-19-04-05-imgl5773-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/16-2026-04-19-04-05-imgl5773-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2016-2026-04-19-04-05-imgl5773-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2016-2026-04-19-04-05-imgl5773-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/17-2026-04-19-04-05-imgl5775-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/17-2026-04-19-04-05-imgl5775-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2017-2026-04-19-04-05-imgl5775-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2017-2026-04-19-04-05-imgl5775-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/18-2026-04-19-04-05-imgl5777-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/18-2026-04-19-04-05-imgl5777-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2018-2026-04-19-04-05-imgl5777-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2018-2026-04-19-04-05-imgl5777-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/19-2026-04-19-04-05-imgl5778-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/19-2026-04-19-04-05-imgl5778-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2019-2026-04-19-04-05-imgl5778-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2019-2026-04-19-04-05-imgl5778-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/20-2026-04-19-04-05-imgl5779-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/20-2026-04-19-04-05-imgl5779-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2020-2026-04-19-04-05-imgl5779-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2020-2026-04-19-04-05-imgl5779-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/21-2026-04-19-04-06-imgl5780-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/21-2026-04-19-04-06-imgl5780-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2021-2026-04-19-04-06-imgl5780-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2021-2026-04-19-04-06-imgl5780-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/22-2026-04-19-04-07-imgl5783.jpeg" loading="lazy" alt="">
+    
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/22-2026-04-19-04-07-imgl5783.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2022-2026-04-19-04-07-imgl5783.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2022-2026-04-19-04-07-imgl5783.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/23-2026-04-19-04-07-imgl5784.jpeg" loading="lazy" alt="">
+    
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/23-2026-04-19-04-07-imgl5784.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2023-2026-04-19-04-07-imgl5784.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2023-2026-04-19-04-07-imgl5784.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/24-2026-04-19-04-07-imgl5788-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/24-2026-04-19-04-07-imgl5788-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2024-2026-04-19-04-07-imgl5788-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2024-2026-04-19-04-07-imgl5788-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="portrait-wrap reveal">
+  <div class="portrait-inner">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/25-2026-04-19-04-07-imgl5789-portrait.jpeg" loading="lazy" alt="">
+    
+  </div>
+  
+  <div class="btn-group btn-group-center"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/25-2026-04-19-04-07-imgl5789-portrait.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2025-2026-04-19-04-07-imgl5789-portrait.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2025-2026-04-19-04-07-imgl5789-portrait.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+</div>
+<div class="gap"></div>
+<div class="photo-standard reveal">
+  <div class="photo-wrap">
+    <img src="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/web/26-2026-04-19-04-07-imgl5797.jpeg" loading="lazy" alt="">
+    
+    <div class="btn-group"><a class="btn" href="https://pub-29ec46e01d4f462d9440a1bbd83a3b59.r2.dev/hd/26-2026-04-19-04-07-imgl5797.jpg" download>↓ DOWNLOAD HD</a><a class="btn" href="mailto:andrea.morara@gmail.com?subject=RAW%20file%20request%3A%2026-2026-04-19-04-07-imgl5797.jpg&body=Hi%2C%0A%0AI%20would%20like%20to%20request%20the%20RAW%20file%20for%3A%2026-2026-04-19-04-07-imgl5797.jpg%0A%0AThank%20you.">✉ REQUEST RAW</a></div>
+  </div>
+</div>
+<div class="gap"></div>
+<footer class="gallery-footer"><p>ISTITUTO ITALIANO DI CULTURA — SYDNEY —  —  IN CONCERT — ALL RIGHTS RESERVED — PHOTO CREDIT: ANDREA MORARA</p></footer>
+</div>
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// fitText — binary search for largest font size that fits parent width
+function fitText(el) {
+  const parent = el.parentElement;
+  if (!parent) return;
+  let lo = 1, hi = 600;
+  el.style.fontSize = hi + 'px';
+  if (el.scrollWidth <= parent.clientWidth) return;
+  while (lo < hi - 1) {
+    const mid = Math.floor((lo + hi) / 2);
+    el.style.fontSize = mid + 'px';
+    if (el.scrollWidth <= parent.clientWidth) lo = mid; else hi = mid;
+  }
+  el.style.fontSize = lo + 'px';
+}
+function applyFitText() { document.querySelectorAll('.fit-text').forEach(fitText); }
+applyFitText();
+window.addEventListener('resize', applyFitText);
+</script>
+</body>
+</html>
